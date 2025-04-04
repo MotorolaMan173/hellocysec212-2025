@@ -167,12 +167,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void saveToPhotoGallery() {
+        if(!photoTaken || photoPath == null){
+            Toast.makeText(this, "No photo to save", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        Intent photoIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File photo = new File(photoPath);
-        Uri contentUri = Uri.fromFile(photo);
-        photoIntent.setData(contentUri);
-        this.sendBroadcast(photoIntent);
+        if (!photo.exists()) {
+            Toast.makeText(this, "File not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        MediaScannerConnection.scanFile(
+                this,
+                new String[]{photoPath},
+                new String[]{"image/jpeg"},
+                null
+
+        );
 
         Toast.makeText(this, "Saved Photo to Gallery", Toast.LENGTH_LONG).show();
     }
