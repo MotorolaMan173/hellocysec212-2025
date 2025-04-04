@@ -1,11 +1,15 @@
 package edu.gannon.photoapp;
 
+import static android.graphics.Bitmap.CompressFormat.JPEG;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +27,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,8 +48,36 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> cameraLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null && data.getExtras() != null) {
+                        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                        if (bitmap != null){
+                            imageTaken.setImageBitmap(bitmap);
+                            photoPath = saveFile(bitmap);
+                            photoTaken = true;
+                        }
+                    }
+                }
             }
     );
+
+    private String saveFile(Bitmap bitmap){
+        String file = "Photo" + System.currentTimeMillis() + ".jpg";
+        File storage = getExternalFilesDir(null);
+        File image = new File(storage, file);
+
+        try {
+            FileOutputStream out = new FileOutputStream(image);
+            bitmap.compress(JPEG, 90, out);
+            out.close();
+            return image.getAbsolutePath();
+        } catch (IOException e){
+            Toast.makeText(this, "Error saving image", Toast.LENGTH_SHORT).show();
+            return null;
+
+        }
+    }
 
 
 
