@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.media.MediaScannerConnection;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
     Button savePhoto;
     ImageView imageTaken;
 
-    private boolean photoTaken = false;
-    private String photoPath;
+    boolean photoTaken = false;
+    String photoPath;
 
 
     private static final int REQUEST_PERMISSION_STORAGE = 1;
@@ -117,9 +118,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void saveToStorage() {
-
-    }
 
     private void requestCameraPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
@@ -150,14 +148,14 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, resultCode, grantResults);
 
         if (requestCode == REQUEST_PERMISSION_CAMERA){
-            if (grantResults.length == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 takePicture(null);
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
         if (requestCode == REQUEST_PERMISSION_STORAGE) {
-            if (grantResults.length == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 saveToPhotoGallery();
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
