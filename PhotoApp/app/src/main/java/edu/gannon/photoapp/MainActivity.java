@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -35,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_STORAGE = 1;
     private static final int REQUEST_PERMISSION_CAMERA = 2;
     private static final int REQUEST_PICTURE = 3;
+
+    private final ActivityResultLauncher<Intent> cameraLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+            }
+    );
 
 
 
@@ -61,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestCameraPermission();
         } else {
-            saveToStorage();
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            cameraLauncher.launch(takePictureIntent);
         }
     }
 
@@ -74,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveToStorage() {
-        
+
     }
 
     private void requestCameraPermission() {
@@ -107,12 +117,20 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == REQUEST_PERMISSION_CAMERA){
             if (grantResults.length == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                saveToStorage();
+                takePicture(null);
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+            }
+        }
+        if (requestCode == REQUEST_PERMISSION_STORAGE) {
+            if (grantResults.length == 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveToPhotoGallery();
             } else {
                 Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
             }
         }
     }
+
 
 
 
