@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String saveFile(Bitmap bitmap){
         String file = "Photo" + System.currentTimeMillis() + ".jpg";
-        File storage = getExternalFilesDir(null);
+        File storage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File image = new File(storage, file);
 
         try {
@@ -111,11 +112,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void savePicture(View view) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestStoragePermission();
-        } else {
+
             saveToPhotoGallery();
-        }
+
     }
 
 
@@ -132,16 +131,6 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    private void requestStoragePermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            Toast.makeText(this, "Permission Required to save photos", Toast.LENGTH_LONG).show();
-        }
-        ActivityCompat.requestPermissions(
-                this,
-                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                REQUEST_PERMISSION_STORAGE
-        );
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] resultCode, @NonNull int[] grantResults) {
